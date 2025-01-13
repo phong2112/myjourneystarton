@@ -1,34 +1,13 @@
 "use client"
 
 import Image from "next/image";
-import Hls from "hls.js";
-import { useEffect, useRef } from "react";
+import VideoPlayerCmp from "./components/VideoPlayer";
 
 export default function Home() {
-  const videoRef = useRef(null);
-  const videoUrl = "https://d2e51043wccsom.cloudfront.net/Squid+Game+-+Season+1+(2021)/output.m3u8";
-
-  useEffect(() => {
-    const videoEle: any = videoRef.current;
-
-    if (Hls.isSupported() && videoRef && videoEle) {
-      const hls = new Hls();
-      hls.loadSource(videoUrl);
-      hls.attachMedia(videoEle);
-    } else if (videoEle.canPlayType("application/vnd.apple.mpegurl")) {
-      videoEle.src = videoUrl;
-      videoEle.addEventListener("canplay", function () {
-        videoEle.play();
-      });
-    }
-  }, []);
-
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <video ref={videoRef} controls width="640" height="360">
-          Your browser does not support the video tag.
-        </video>
+        <VideoPlayerCmp />
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a

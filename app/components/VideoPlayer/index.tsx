@@ -1,30 +1,36 @@
-"use client"
+"use client";
 
 import Hls from "hls.js";
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import "video.js/dist/video-js.css";
+import videojs from "video.js";
+export default function VideoPlayerCmp({ src }) {
+  const videoRef = useRef(null);
 
-export default function VideoPlayerCmp() {
-    const videoRef = useRef(null);
-    const videoUrl = "https://d2e51043wccsom.cloudfront.net/Squid+Game+-+Season+1+(2021)/S01E01/output.m3u8";
-    
-    useEffect(() => {
-        const videoEle: any = videoRef.current;
+  useEffect(() => {
+    // Initialize Video.js player
+    const player = videojs(videoRef.current, {
+      autoplay: true, // Optional: autoplay the video
+      controls: true, // Show the video controls
+      sources: [
+        {
+          src: src, // HLS stream URL (.m3u8 file)
+          type: "application/x-mpegURL", // HLS MIME type
+        },
+      ],
+    });
 
-        if (Hls.isSupported() && videoRef && videoEle) {
-            const hls = new Hls();
-            hls.loadSource(videoUrl);
-            hls.attachMedia(videoEle);
-        } else if (videoEle.canPlayType("application/vnd.apple.mpegurl")) {
-            videoEle.src = videoUrl;
-            videoEle.addEventListener("canplay", function () {
-                videoEle.play();
-            });
-        }
-    }, []);
+    // Cleanup on component unmount
+    return () => {
+      if (player) {
+        player.dispose();
+      }
+    };
+  }, [src]);
 
-    return (
-        <video ref={videoRef} controls width="640" height="360">
-            Your browser does not support the video tag.
-        </video>
-    );
+  return (
+    <div data-vjs-player>
+      <video ref={videoRef} className="video-js vjs-default-skin" />
+    </div>
+  );
 }
